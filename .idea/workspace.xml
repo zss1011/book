@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="a19e64ac-5eb7-4d15-9f00-24d097bb3ce1" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/book-manager-backend/src/main/java/book/manager/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/book-manager-backend/src/main/java/book/manager/MainApplication.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,9 +25,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="36xB6Rdq7wTKAfJ438ojTENMsY5" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -38,6 +37,7 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
@@ -74,6 +74,7 @@
       <option name="presentableId" value="Default" />
       <updated>1765938166547</updated>
       <workItem from="1765938167569" duration="310000" />
+      <workItem from="1765938480457" duration="88000" />
     </task>
     <servers />
   </component>
