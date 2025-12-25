@@ -7,10 +7,7 @@ import book.manager.dao.service.RoleDao;
 import book.manager.dao.service.UserDao;
 import book.manager.dao.service.UserRoleDao;
 import book.manager.domain.common.BaseUUID;
-import book.manager.domain.dto.LoginDTO;
-import book.manager.domain.dto.RegisterUserDTO;
-import book.manager.domain.dto.UserPageDTO;
-import book.manager.domain.dto.UserUpdateDTO;
+import book.manager.domain.dto.*;
 import book.manager.domain.entity.Role;
 import book.manager.domain.entity.User;
 import book.manager.domain.entity.UserRole;
@@ -119,6 +116,8 @@ public class UserServiceImpl implements UserService {
         userVO.setAvatar(user.getAvatar());
         userVO.setPhone(user.getPhone());
         userVO.setEmail(user.getEmail());
+        userVO.setLockStatus(user.getLockStatus());
+        userVO.setMuteStatus(user.getMuteStatus());
         
         List<RoleVO> roles = getUserRoles(userId);
         userVO.setRoles(roles);
@@ -250,6 +249,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO getUserById(String userId) {
         return buildUserVO(userId);
+    }
+    
+    /**
+     * 确认密码
+     *
+     * @param password
+     */
+    @Override
+    public boolean validPassword(String userId, String password) {
+        User user = userDao.getById(userId);
+        return StrUtil.equals(user.getPassword(), password);
+    }
+    
+    /**
+     * 修改密码
+     *
+     * @param dto
+     */
+    @Override
+    public void updatePassword(UpdatePasswordDTO dto) {
+        User user = userDao.getById(dto.getUserId());
+        if (!StrUtil.equals(user.getPassword(), dto.getOldPassword()))
+            throw new RuntimeException("修改失败:密码错误!");
+        user.setPassword(dto.getNewPassword());
+        userDao.updateById(user);
     }
 }
 

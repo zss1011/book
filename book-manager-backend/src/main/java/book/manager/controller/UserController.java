@@ -1,10 +1,7 @@
 package book.manager.controller;
 
 import book.manager.domain.common.Response;
-import book.manager.domain.dto.LoginDTO;
-import book.manager.domain.dto.RegisterUserDTO;
-import book.manager.domain.dto.UserPageDTO;
-import book.manager.domain.dto.UserUpdateDTO;
+import book.manager.domain.dto.*;
 import book.manager.domain.vo.UserPageVO;
 import book.manager.domain.vo.UserVO;
 import book.manager.service.UserService;
@@ -67,6 +64,20 @@ public class UserController {
         userService.updateUser(dto);
         return Response.ok(true);
     }
+    
+    @ApiOperation("确认密码")
+    @GetMapping("/valid/password")
+    public Response<Boolean> validPassword(@RequestParam String userId, @RequestParam String password) {
+        return Response.ok(userService.validPassword(userId, password));
+    }
+    
+    @ApiOperation("修改密码")
+    @PostMapping("/update/password")
+    public Response<Boolean> updatePassword(@Valid @RequestBody UpdatePasswordDTO dto) {
+        userService.updatePassword(dto);
+        return Response.ok(true);
+    }
+    
     
 }
 

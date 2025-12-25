@@ -28,7 +28,7 @@ export const userRoutes = {
         {
             path: 'collect',
             component: () => import('@/views/user/collect/Collect.vue'),
-            meta: {menu: true, title: '收藏', icon: 'Notification', path: '/user/background/collect'},
+            meta: {menu: true, title: '收藏', icon: 'Icon收藏', path: '/user/background/collect'},
         },
         {
             path: 'notice',
@@ -44,6 +44,11 @@ export const userRoutes = {
             path: 'message',
             component: () => import('@/views/user/message/Message.vue'),
             meta: {menu: true, title: '通知', icon: 'Notification', path: '/user/background/message'},
+        },
+        {
+            path: 'info',
+            component: () => import('@/views/user/user-info/UserInfo.vue'),
+            meta: {menu: false, title: '用户信息', icon: 'Notification', path: '/user/background/info'},
         },
         {
             path: 'user/child',

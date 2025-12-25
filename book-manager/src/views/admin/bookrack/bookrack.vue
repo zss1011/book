@@ -28,7 +28,6 @@
                             <el-button size="small" type="primary" plain @click="handleEdit(row)">编辑</el-button>
                             <el-button size="small" type="primary" plain @click="handleDelete(row)">删除</el-button>
                         </template>
-
                     </template>
                 </el-table-column>
             </el-table>

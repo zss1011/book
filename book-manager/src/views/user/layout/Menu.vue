@@ -10,7 +10,25 @@
 import {userRoutes} from "@/router/user.js";
 import SubMenu from "@/views/user/layout/SubMenu.vue";
 
-const menus = userRoutes.children
+let menus = userRoutes.children
+// 过滤菜单
+const filterMenus = (routes) => {
+    const result = []
+    for (let route of routes) {
+        const keep = route?.meta?.menu
+        if (!keep) continue;
+        const newRoute = {...route}
+        const children = route.children;
+        if (Array.isArray(children) && children.length > 0) {
+            const res = filterMenus(children);
+            newRoute.children = res;
+        }
+        result.push(newRoute)
+    }
+    return result;
+}
+menus = filterMenus(menus)
+
 </script>
 
 <style scoped lang="scss">

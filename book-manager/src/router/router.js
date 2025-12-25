@@ -17,7 +17,7 @@ export const routes = [
         path: '/notice/detail',
         component: () => import('@/views/admin/notice/NoticeDetail.vue'),
         meta: {menu: false, title: '公告管理', path: '/notice/detail'},
-    },
+    }
 ]
 
 routes.push(adminRoutes)

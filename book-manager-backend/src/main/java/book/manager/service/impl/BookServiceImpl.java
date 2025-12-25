@@ -1,21 +1,25 @@
 package book.manager.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import book.manager.dao.service.BookDao;
 import book.manager.dao.service.CommonFileDao;
+import book.manager.dao.service.UserBookRelationDao;
 import book.manager.domain.common.BaseUUID;
 import book.manager.domain.dto.BookAddDTO;
 import book.manager.domain.dto.BookPageDTO;
 import book.manager.domain.dto.BookUpdateDTO;
 import book.manager.domain.entity.Book;
+import book.manager.domain.entity.UserBookRelation;
 import book.manager.domain.vo.BookPageVO;
 import book.manager.domain.vo.BookVO;
 import book.manager.service.BookService;
+import book.manager.threadLocal.UserContext;
 import book.manager.utils.BeanUtil;
+import book.manager.utils.CollUtil;
 import book.manager.utils.ListUtil;
 import book.manager.utils.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -39,6 +43,8 @@ public class BookServiceImpl implements BookService {
     private BookDao bookDao;
     @Resource
     private CommonFileDao commonFileDao;
+    @Resource
+    private UserBookRelationDao userBookRelationDao;
     
     /**
      * 新增书籍
@@ -83,10 +89,14 @@ public class BookServiceImpl implements BookService {
         
         books = filterSearch(books, pageDTO);
         
+        // 准备数据
+        List<UserBookRelation> userBookRelations = userBookRelationDao.listByUserId(UserContext.getUserId());
+        Map<String, List<UserBookRelation>> userBookRelationMap = userBookRelations.stream().collect(Collectors.groupingBy(UserBookRelation::getBookId));
+        
         // 构建PageVO
         List<BookPageVO> pageVOS = new ArrayList<>();
         for (Book book : books) {
-            BookPageVO pageVO = buildBookPageVO(book);
+            BookPageVO pageVO = buildBookPageVO(book, userBookRelationMap);
             pageVOS.add(pageVO);
         }
         
@@ -107,7 +117,7 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
     
-    private BookPageVO buildBookPageVO(Book book) {
+    private BookPageVO buildBookPageVO(Book book, Map<String, List<UserBookRelation>> userBookRelationMap) {
         BookPageVO pageVO = new BookPageVO();
         pageVO.setId(book.getId());
         pageVO.setName(book.getName());
@@ -118,6 +128,28 @@ public class BookServiceImpl implements BookService {
         pageVO.setNumber(book.getNumber());
         pageVO.setCover(book.getCover());
         pageVO.setPublishers(book.getPublishers());
+        
+        pageVO.setSubscriptionStatus(false);
+        pageVO.setCollectStatus(false);
+        pageVO.setBorrowStatus(false);
+        List<UserBookRelation> userBookRelations = userBookRelationMap.get(book.getId());
+        if (CollUtil.isNotEmpty(userBookRelations)) {
+            for (UserBookRelation userBookRelation : userBookRelations) {
+                Integer subscriptionStatus = userBookRelation.getSubscriptionStatus();
+                Integer collectStatus = userBookRelation.getCollectStatus();
+                Integer borrowStatus = userBookRelation.getBorrowStatus();
+                if (subscriptionStatus != null) {
+                    pageVO.setSubscriptionStatus(subscriptionStatus == 1);
+                }
+                if (collectStatus != null) {
+                    pageVO.setCollectStatus(collectStatus == 1);
+                }
+                if (borrowStatus != null) {
+                    pageVO.setBorrowStatus(borrowStatus == 1);
+                }
+            }
+        }
+        
         return pageVO;
     }
     

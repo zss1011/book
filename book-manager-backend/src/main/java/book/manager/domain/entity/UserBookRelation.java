@@ -4,6 +4,8 @@ import book.manager.domain.common.BaseUUID;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -37,5 +39,11 @@ public class UserBookRelation extends BaseUUID implements Serializable {
 
     @ApiModelProperty("借阅状态:1是 0否")
     private Integer borrowStatus;
+    
+    @ApiModelProperty("借阅数量")
+    private Integer borrowCount;
+    
+    @ApiModelProperty("归还日期")
+    private Date returnTime;
     
 }

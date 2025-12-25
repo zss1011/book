@@ -36,13 +36,13 @@
                         </div>
                         <div class="status-item" v-else-if="book.status === 2">
                             <el-icon class="status-icon">
-                                <CircleCheckFilled class="putaway"/>
+                                <CircleCheckFilled class="putaway" />
                             </el-icon>
                             <span>书籍已上架</span>
                         </div>
                         <div class="status-item" v-else>
                             <el-icon class="status-icon">
-                                <CircleCloseFilled class="out-of-stock"/>
+                                <CircleCloseFilled class="out-of-stock" />
                             </el-icon>
                             <span>书籍已下架</span>
                         </div>
@@ -51,14 +51,28 @@
                     <div class="publishers">由【{{ book.publishers }}】出版</div>
                     <div class="author">作者：{{ book.author }}</div>
                     <div v-if="book.status === 1">
-                        <el-button type="info" size="small">订阅</el-button>
+                        <el-button class="cursor" type="info" size="small" @click="handleSubscription(book.id)" v-if="!book.subscriptionStatus">订阅</el-button>
+                        <span v-else class="has cursor subscription-status" @click="handleCancelSubscription(book.id)" />
                     </div>
                     <div v-if="book.status === 2">
-                        <el-button type="info" size="small">收藏</el-button>
-                        <el-button type="info" size="small">借书</el-button>
+                        <el-button class="cursor" type="info" size="small" @click="handleCollect(book.id)" v-if="!book.collectStatus">
+                            <template #icon>
+                                <Icon收藏 />
+                            </template>
+                            收藏
+                        </el-button>
+                        <span class="has cursor collect-status" v-else @click="handleCancelCollect(book.id)" />
+                        <el-button class="cursor" type="info" size="small" @click="handleOpenBorrowDialog(book.id)" v-if="!book.borrowStatus">借阅</el-button>
+                        <span class="has cursor borrow-status" @click="handleCancelBorrow(book.id)" v-else />
                     </div>
                     <div v-if="book.status === 3">
-                        <el-button type="info" size="small">收藏</el-button>
+                        <el-button class="cursor" type="info" size="small" @click="handleCollect(book.id)" v-if="!book.collectStatus">
+                            <template #icon>
+                                <Icon收藏 />
+                            </template>
+                            收藏
+                        </el-button>
+                        <span class="has cursor collect-status" v-else @click="handleCancelCollect(book.id)" />
                     </div>
                 </div>
             </div>
@@ -73,15 +87,52 @@
                 @change="handlePageChange"
             />
         </div>
+        <div class="borrow-dialog-wrapper">
+            <el-dialog v-model="dialogVisible" width="400">
+                <el-form :model="borrowForm" :rules="borrowFormRules" ref="borrowFormRef">
+                    <el-form-item label-position="top" required>
+                        <template #label>
+                            <span class="label-name">借书数量</span>
+                        </template>
+                        <el-input-number v-model="borrowForm.borrowCount" :min="1" :max="chooseBookNum" class="borrow-form-content" />
+                    </el-form-item>
+                    <el-form-item label-position="top" prop="returnTime">
+                        <template #label>
+                            <span class="label-name">归还日期</span>
+                        </template>
+                        <el-date-picker
+                            v-model="borrowForm.returnTime"
+                            type="date"
+                            placeholder="选择日期"
+                            size="default"
+                            style="width: 100%"
+                            class="borrow-form-content"
+                        />
+                    </el-form-item>
+
+                </el-form>
+                <template #footer>
+                    <div class="borrow-dialog-footer">
+                        <el-button type="info" @click="handleCancelBorrowBook">取消操作</el-button>
+                        <el-button type="primary" @click="handleBorrowBook">确定借阅</el-button>
+                    </div>
+                </template>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
 <script setup lang="js">
-import {CircleCheckFilled, CircleCloseFilled, Search, WarningFilled} from "@element-plus/icons-vue";
+import {Delete, CircleCheckFilled, CircleCloseFilled, Search, WarningFilled} from "@element-plus/icons-vue";
 import {onMounted, reactive, ref} from "vue";
 import {getBookTypeConfigApi} from '@/api/systemConfigApi.js'
 import {bookPageApi} from "@/api/bookApi.js";
 import {downloadFileApi} from "@/api/fileApi.js"
+import {userBookOperationApi} from "@/api/userBookRelationApi.js";
+import {useUserStore} from "@/store/useUserStore.js";
+import dayjs from "dayjs";
+
+const {user} = useUserStore()
 
 const bookTypes = ref([])
 onMounted(async () => {
@@ -107,14 +158,27 @@ const handleSelectBookType = async (index, bookType) => {
 // 搜索书籍
 const books = ref([])
 const handleSearch = async () => {
-    const {data, total} = await bookPageApi(searchBookPageDTO)
+    const {data} = await bookPageApi(searchBookPageDTO)
     books.value = data.records;
     searchBookPageDTO.total = data.total;
     for (let book of books.value) {
         book.previewUrl = await download(book.cover)
     }
-    console.log(books.value);
-    console.log(searchBookPageDTO)
+}
+
+// 借阅对话框
+const dialogVisible = ref(false);
+const borrowForm = reactive({
+    bookId: '',
+    borrowCount: 1,
+    returnTime: null,
+})
+const borrowFormRef = ref(null)
+// 选中书籍的数量
+const chooseBookNum = ref(1)
+
+const borrowFormRules = {
+    returnTime: [{required: true, message: '归还日期不能为空', trigger: 'blur'}]
 }
 
 const searchBookPageDTO = reactive({
@@ -136,6 +200,77 @@ const download = async (fileId) => {
 // 处理分页切换
 const handlePageChange = async () => {
     await handleSearch();
+}
+
+// 书籍订阅
+const handleSubscription = async (bookId) => {
+    await executeUserBookOperation(bookId, 1, true);
+    await handleSearch();
+}
+// 取消:书籍订阅
+const handleCancelSubscription = async (bookId) => {
+    await executeUserBookOperation(bookId, 1, false);
+    await handleSearch();
+}
+
+// 书籍收藏
+const handleCollect = async (bookId) => {
+    await executeUserBookOperation(bookId, 2, true);
+    await handleSearch();
+}
+// 取消:书籍收藏
+const handleCancelCollect = async (bookId) => {
+    await executeUserBookOperation(bookId, 2, false);
+    await handleSearch();
+}
+// 打开书籍借阅
+const handleOpenBorrowDialog = async (bookId) => {
+    // 打开借阅框
+    dialogVisible.value = true;
+    const book = books.value.find(book => {
+        return book.id === bookId
+    });
+    chooseBookNum.value = book.number
+    borrowForm.bookId = bookId
+}
+
+const handleCancelBorrowBook = async (bookId) => {
+    dialogVisible.value = false;
+}
+
+// 书籍借阅
+const handleBorrowBook = async (bookId) => {
+    try {
+        await borrowFormRef.value.validate()
+        const returnTime = dayjs(borrowForm.returnTime).format('YYYY-MM-DD HH:mm:ss');
+        const body = {
+            userId: user.value.id,
+            bookId: borrowForm.bookId,
+            operation: true,
+            returnTime: returnTime,
+            borrowCount: borrowForm.borrowCount,
+            type: 3,
+        }
+        await userBookOperationApi(body);
+    } catch (e) {
+        console.error(e)
+    }
+}
+// 取消:书籍借阅
+const handleCancelBorrow = async (bookId) => {
+    await executeUserBookOperation(bookId, 3, false);
+    await handleSearch();
+}
+
+// 执行用户书籍操作
+const executeUserBookOperation = async (bookId, type, operation) => {
+    const body = {
+        userId: user.value.id,
+        bookId: bookId,
+        operation: operation,
+        type: type,
+    }
+    await userBookOperationApi(body);
 }
 
 </script>
@@ -239,11 +374,11 @@ const handlePageChange = async () => {
                             margin-top: 3px;
                             color: black;
 
-                            .putaway{
+                            .putaway {
                                 color: gold;
                             }
 
-                            .out-of-stock{
+                            .out-of-stock {
                                 color: gray;
                             }
                         }
@@ -259,6 +394,44 @@ const handlePageChange = async () => {
                     font-size: 12px;
                     color: gray;
                 }
+
+                .cursor {
+                    cursor: pointer;
+                }
+
+                .subscription-status::after {
+                    content: '已订阅';
+                }
+
+                .subscription-status:hover::after {
+                    content: '取消订阅';
+                    color: #f56c6c;
+                }
+
+                .collect-status::after {
+                    content: '已收藏';
+                }
+
+                .collect-status:hover::after {
+                    content: '取消收藏';
+                    color: #f56c6c;
+                }
+
+                .borrow-status::after {
+                    content: '已借阅';
+                }
+
+                .borrow-status:hover::after {
+                    content: '取消借阅';
+                    color: #f56c6c;
+                }
+
+                .has {
+                    font-size: 12px;
+                    color: blue;
+                    margin: 0 6px 0 6px;
+                    font-weight: bold;
+                }
             }
         }
     }
@@ -268,6 +441,22 @@ const handlePageChange = async () => {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .borrow-dialog-wrapper {
+        .label-name {
+            font-size: 16px;
+            color: gray;
+        }
+
+        .borrow-form-content {
+            width: 100%;
+        }
+
+        .borrow-dialog-footer {
+            display: flex;
+            justify-content: center;
+        }
     }
 
     :deep(.el-input__wrapper.is-focus ) {

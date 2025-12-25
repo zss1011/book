@@ -9,6 +9,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import {registerGuards} from '@/router/guards.js'
 import {createPinia} from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
+import {registerSvgIcons} from "@/config/svg/register-svg-icons.js";
 
 const app = createApp(App)
 app.use(router)
@@ -16,6 +17,10 @@ app.use(ElementPlus, {locale: zhCn})
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
+
+// svg icon
+registerSvgIcons(app)
+
 // 注册路由守卫
 registerGuards()
 const pinia = createPinia();

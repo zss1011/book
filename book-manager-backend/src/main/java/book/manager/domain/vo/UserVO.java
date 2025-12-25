@@ -42,6 +42,12 @@ public class UserVO {
     @ApiModelProperty("邮箱")
     private String email;
     
+    @ApiModelProperty("账号锁定状态:0正常 1锁定")
+    private Integer lockStatus;
+    
+    @ApiModelProperty("账号禁言状态:0正常 1禁言")
+    private Integer muteStatus;
+    
     @ApiModelProperty("用户角色")
     private List<RoleVO> roles;
     

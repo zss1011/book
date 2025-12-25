@@ -1,9 +1,6 @@
 package book.manager.service;
 
-import book.manager.domain.dto.LoginDTO;
-import book.manager.domain.dto.RegisterUserDTO;
-import book.manager.domain.dto.UserPageDTO;
-import book.manager.domain.dto.UserUpdateDTO;
+import book.manager.domain.dto.*;
 import book.manager.domain.vo.UserPageVO;
 import book.manager.domain.vo.UserVO;
 import book.manager.utils.JsonUtil;
@@ -59,7 +56,7 @@ public interface UserService {
      *
      * @param dto
      */
-    void updateUser(@Valid UserUpdateDTO dto);
+    void updateUser(UserUpdateDTO dto);
     
     /**
      * 根据userId获取用户
@@ -69,6 +66,17 @@ public interface UserService {
      */
     UserVO getUserById(String userId);
     
-    public static void main(String[] args) {
-    }
+    /**
+     * 确认密码
+     *
+     * @param password
+     */
+    boolean validPassword(String userId, String password);
+    
+    /**
+     * 修改密码
+     *
+     * @param dto
+     */
+    void updatePassword(UpdatePasswordDTO dto);
 }

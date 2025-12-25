@@ -1,4 +1,6 @@
 // 触发文件下载
+import {downloadFileApi} from "@/api/fileApi.js";
+
 export function triggerDownload(res) {
     // 文件名
     let filename = 'download'
@@ -17,4 +19,12 @@ export function triggerDownload(res) {
     a.click()
     a.remove()
     URL.revokeObjectURL(url)
+}
+
+// 图片预览
+export const previewUrl = async (fileId) => {
+    // 获取文件流
+    const res = await downloadFileApi(fileId)
+    const blob = res.data
+    return URL.createObjectURL(blob)
 }

@@ -40,4 +40,13 @@ public class BookPageVO {
     @ApiModelProperty("出版商")
     private String publishers;
     
+    @ApiModelProperty("订阅状态:true是 false否")
+    private Boolean subscriptionStatus;
+    
+    @ApiModelProperty("收藏状态:true是 false否")
+    private Boolean collectStatus;
+    
+    @ApiModelProperty("借阅状态:true是 false否")
+    private Boolean borrowStatus;
+    
 }

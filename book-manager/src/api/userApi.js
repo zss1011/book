@@ -29,3 +29,13 @@ export const updateUserApi = (data) => {
 export const getUserByIdApi = (id) => {
     return request.get('/user/v1/user/detail?id=' + id)
 }
+
+// 确认密码
+export const validPasswordApi = (userId, password) => {
+    return request.get('/user/v1/valid/password?userId=' + userId + '&password=' + password)
+}
+
+// 修改密码
+export const updatePasswordApi = (data) => {
+    return request.post('/user/v1/update/password', data);
+}
