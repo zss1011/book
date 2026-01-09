@@ -3,7 +3,7 @@
         <el-dialog v-model="dialogVisible" @close="handleClose"
                    title="个人中心" width="20%"
         >
-            <el-form :model="user" class="form-content" label-position="top">
+            <el-form :model="user" class="form-item-content" label-position="top">
                 <el-form-item label="*头像">
                     <el-upload class="avatar-uploader"
                                :show-file-list="false"

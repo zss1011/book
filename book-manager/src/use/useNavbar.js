@@ -14,9 +14,9 @@ export const getTitles = (path) => {
 
     let titles = []
     if(parent){
-        titles.push(parent.meta.title);
+        titles.push(parent.meta.bookName);
     }
-    titles.push(menu.meta.title);
+    titles.push(menu.meta.bookName);
     return titles;
 }
 

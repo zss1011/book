@@ -7,7 +7,7 @@
                     <el-icon>
                         <component :is="menu.meta.icon" />
                     </el-icon>
-                    <span>{{ menu.meta.title }}</span>
+                    <span>{{ menu.meta.bookName }}</span>
                 </template>
             </el-menu-item>
         </template>
@@ -18,7 +18,7 @@
                     <el-icon>
                         <component :is="menu.meta.icon" />
                     </el-icon>
-                    <span>{{ menu.meta.title }}</span>
+                    <span>{{ menu.meta.bookName }}</span>
                 </template>
                 <!--需要递归调用-->
                 <SubMenu v-model:menus="menu.children" />

@@ -49,7 +49,7 @@ onMounted(async () => {
         let data = res.data.records[i]
         notice.value.push({
             id: data.id,
-            name: data.title,
+            name: data.bookName,
             desc: data.createTime
         })
         if (i === 3) {

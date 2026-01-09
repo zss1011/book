@@ -18,7 +18,7 @@
                 <el-table-column label="功能操作">
                     <template #default="{row}">
                         <el-button v-if="!row.borrowStatus" plain size="small" type="primary" @click="handleBorrow(row.bookId, true)">借阅</el-button>
-                        <el-button v-else plain size="small" type="primary" @click="handleBorrow(row.bookId, false)">取消借阅</el-button>
+                        <el-button v-else plain size="small" type="primary" @click="handleCancelBorrow(row.bookId, false)">取消借阅</el-button>
                         <el-button plain size="small" type="primary" @click="handleCancelCollect(row.bookId)">取消收藏</el-button>
                     </template>
                 </el-table-column>
@@ -34,6 +34,7 @@
                 @change="handlePageChange"
             />
         </div>
+        <BorrowDialog v-model:dialogVisible="dialogVisible" :selectBookId/>
     </div>
 </template>
 
@@ -42,8 +43,12 @@ import {Search} from "@element-plus/icons-vue";
 import {onMounted, reactive, ref} from "vue";
 import {userBookOperationApi, userBookRelationPageApi} from "@/api/userBookRelationApi.js";
 import {useUserStore} from "@/store/useUserStore.js";
+import BorrowDialog from "@/views/user/collect/BorrowDialog.vue";
 
 const {user} = useUserStore()
+
+const dialogVisible = ref(false);
+const selectBookId = ref('');
 
 const pageDTO = reactive({
     bookName: null,
@@ -56,7 +61,6 @@ const pageDTO = reactive({
 const pageVOS = ref([])
 onMounted(async () => {
     await executeSearchPage()
-    console.log(pageVOS.value)
 })
 
 // 执行分页查询
@@ -90,10 +94,15 @@ const handleCancelCollect = async (bookId) => {
 
 // 处理书籍借阅
 const handleBorrow = async (bookId, operation) => {
+    dialogVisible.value = !dialogVisible.value;
+    selectBookId.value = bookId;
+}
+// 取消借阅
+const handleCancelBorrow = async (bookId) => {
     const body = {
         userId: user.value.id,
         bookId: bookId,
-        operation: operation,
+        operation: false,
         type: 3,
     }
     await userBookOperationApi(body)

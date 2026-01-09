@@ -53,6 +53,13 @@ public class UserCommentController {
         return Response.ok(userCommentService.userCommentPage(dto));
     }
     
+    @ApiOperation("删除:用户评论")
+    @GetMapping("/delete")
+    public Response<Boolean> deleteUserComment(@RequestParam String id) {
+        userCommentService.deleteUserComment(id);
+        return Response.ok(true);
+    }
+    
 }
 
 

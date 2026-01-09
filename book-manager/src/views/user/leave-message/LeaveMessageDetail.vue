@@ -9,7 +9,11 @@
                         <div style="margin: 0 0 6px 40px; font-size: 14px; color: #504f4f; font-weight: 500; width: 600px;">{{ list[0].comment }}</div>
                         <div class="time-reply">
                             <div style="margin-left: 40px; font-size: 12px; color: #aaa">{{ list[0].createTime }}</div>
-                            <div style="margin-left: 100px; font-size: 12px; color: #aaa; cursor: pointer" @click="handleReply(list[0].id); handleCreate(list[0])">回复</div>
+                            <div style="margin-left: 100px; font-size: 12px; color: #aaa; cursor: pointer; display: flex; gap: 10px">
+                                <div @click="handleReply(list[0].id); handleCreate(list[0])">回复</div>
+                                <div @click="handleDelete(list[0].id);">删除</div>
+                            </div>
+
                         </div>
                         <div class="comment" v-if="activeReplyId === list[0].id" style="margin: 6px 0 6px 0">
                             <el-input :ref="el => inputRefMap[list[0].id] = el" v-model="replyContent" :rows="1" type="textarea" :placeholder="'回复 ' + list[0].realName"
@@ -38,7 +42,11 @@
                             <div style="width: 600px ;margin-left: 40px; font-size: 14px; color: #504f4f; word-break: break-all;">{{ item.comment }}</div>
                             <div class="time-reply" style="margin-top: 6px">
                                 <div style="padding-left: 40px; font-size: 12px; color: #aaa">{{ item.createTime }}</div>
-                                <div style="margin-left: 100px; font-size: 12px; color: #aaa; cursor:pointer;" @click="handleReply(item.id); handleCreate(item)">回复</div>
+                                <div style="margin-left: 100px; font-size: 12px; color: #aaa; cursor:pointer; display: flex; gap: 10px">
+                                    <div @click="handleReply(item.id); handleCreate(item)">回复</div>
+                                    <div @click="handleDelete(item.id);">删除</div>
+                                </div>
+
                             </div>
                             <div class="comment" v-if="activeReplyId === item.id">
                                 <el-input :ref="el => inputRefMap[item.id] = el" v-model="replyContent" :rows="1" type="textarea" :placeholder="'回复 ' + item.realName"
@@ -69,7 +77,7 @@
 import {nextTick, onMounted, reactive, ref} from "vue";
 import {downloadFileApi} from '@/api/fileApi.js'
 import Arrows from '@/svg/右箭头.svg'
-import {getUserCommentsApi, addUserCommentApi, getAllUserCommentsApi, userCommentPageApi} from "@/api/userCommentApi.js";
+import {getUserCommentsApi, addUserCommentApi, getAllUserCommentsApi, userCommentPageApi, deleteUserCommentApi} from "@/api/userCommentApi.js";
 import {currentUserApi} from "@/api/userApi.js";
 import emitter from "@/config/emitter/emitter.js";
 
@@ -120,6 +128,11 @@ const handleReply = (id) => {
             }
         }, 500)
     })
+}
+
+const handleDelete = async (id) => {
+    await deleteUserCommentApi(id)
+    await queryPage();
 }
 
 // 文件下载

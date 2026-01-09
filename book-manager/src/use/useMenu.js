@@ -19,7 +19,7 @@ export const filterMenus = (routes) => {
     }
 
     // 过滤child中titles
-    return menus.filter(menu => !childTitles.includes(menu.meta.title) && !userPaths.includes(menu.meta.path));
+    return menus.filter(menu => !childTitles.includes(menu.meta.bookName) && !userPaths.includes(menu.meta.path));
 }
 
 // 获取users中的所有路由
@@ -60,7 +60,7 @@ export const dupGetTitles = (routes) => {
     const titles = [];
     for (let route of routes) {
         if (!route.children) {
-            titles.push(route.meta?.title);
+            titles.push(route.meta?.bookName);
         } else {
             titles.push(...dupGetTitles(route.children))
         }

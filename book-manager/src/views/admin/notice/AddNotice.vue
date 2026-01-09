@@ -128,7 +128,7 @@ onMounted(async () => {
     // 暂停1秒
     const res = await richTextDetailApi(richTextId)
     valueHtml.value = await replaceFileId(res.data.content);
-    title.value = res.data.title
+    title.value = res.data.bookName
 })
 
 
@@ -188,7 +188,7 @@ const handleClose = async () => {
 const saveRichText = async (valueHtml) => {
     const data = {
         userId: userStore.user.value.id,
-        title: title.value,
+        bookName: title.value,
         content: valueHtml
     }
     return await createRichTextApi(data)
@@ -196,7 +196,7 @@ const saveRichText = async (valueHtml) => {
 const updateRichText = async (valueHtml) => {
     const data = {
         id: richTextId,
-        title: title.value,
+        bookName: title.value,
         content: valueHtml
     }
     await updateRichTextApi(data);

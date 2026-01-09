@@ -93,7 +93,6 @@ const handlePageChange = async () => {
     height: 100vh;
 
     .header {
-        background-color: skyblue;
         height: 120px;
         display: flex;
         align-items: center;

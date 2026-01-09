@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +48,14 @@ public class UserBookRelationDaoImpl extends ServiceImpl<UserBookRelationMapper,
     public List<UserBookRelation> listByUserIdAndSubscriptionStatus(String userId, int subscriptionStatus) {
         return this.lambdaQuery()
                 .eq(UserBookRelation::getUserId, userId)
+                .eq(UserBookRelation::getSubscriptionStatus, subscriptionStatus)
+                .list();
+    }
+    
+    @Override
+    public List<UserBookRelation> listByBookIdAndSubscriptionStatus(String bookId, int subscriptionStatus) {
+        return this.lambdaQuery()
+                .eq(UserBookRelation::getBookId, bookId)
                 .eq(UserBookRelation::getSubscriptionStatus, subscriptionStatus)
                 .list();
     }

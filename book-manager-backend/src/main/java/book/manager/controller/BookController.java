@@ -62,4 +62,11 @@ public class BookController {
         return Response.ok(true);
     }
     
+    @ApiOperation("上架:书籍")
+    @GetMapping("/added")
+    public Response<Boolean> addedBook(@RequestParam String bookId) {
+        bookService.addedBook(bookId);
+        return Response.ok(true);
+    }
+    
 }

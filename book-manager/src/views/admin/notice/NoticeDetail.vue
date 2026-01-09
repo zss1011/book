@@ -24,7 +24,7 @@ onMounted(async () => {
     let id = route.query.id;
     // 获取公告详情
     const res = await richTextDetailApi(id);
-    title.value = res.data.title;
+    title.value = res.data.bookName;
     // 处理图片预览
     content.value = await replaceFileId(res.data.content);
     console.log()

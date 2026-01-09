@@ -1,4 +1,6 @@
 // 日期：快捷选择
+import dayjs from "dayjs";
+
 export const shortcuts = [
     {
         text: '最近一周',

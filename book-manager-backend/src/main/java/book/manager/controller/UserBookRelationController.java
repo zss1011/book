@@ -1,18 +1,13 @@
 package book.manager.controller;
 
 import book.manager.domain.common.Response;
-import book.manager.domain.dto.UserBookOperationDTO;
-import book.manager.domain.dto.UserBookRelationPageDTO;
-import book.manager.domain.vo.UserBookCollectPageVO;
-import book.manager.domain.vo.UserBookSubscriptionPageVO;
+import book.manager.domain.dto.*;
+import book.manager.domain.vo.*;
 import book.manager.service.UserBookRelationService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -47,6 +42,52 @@ public class UserBookRelationController {
     @PostMapping("/subscription/page")
     public Response<Page<UserBookSubscriptionPageVO>> userBookSubscriptionPage(@Valid @RequestBody UserBookRelationPageDTO pageDTO) {
         return Response.ok(userBookRelationService.userBookSubscriptionPage(pageDTO));
+    }
+    
+    @ApiOperation("分页查询:用户已借阅书籍")
+    @PostMapping("/borrow/page")
+    public Response<Page<UserBookBorrowPageVO>> userBookBorrowPage(@Valid @RequestBody UserBookBorrowPageDTO pageDTO) {
+        return Response.ok(userBookRelationService.userBookBorrowPage(pageDTO));
+    }
+    
+    @ApiOperation("分页查询:用户订阅的书籍上架通知")
+    @PostMapping("/subscription/book/added/page")
+    public Response<Page<SubscriptionBookAddedPageVO>> subscriptionBookAddedPage(@Valid @RequestBody SubscriptionBookAddedPageDTO pageDTO) {
+        return Response.ok(userBookRelationService.subscriptionBookAddedPage(pageDTO));
+    }
+    
+    @ApiOperation("用户阅读:书籍上架消息")
+    @GetMapping("/read/book/added/message")
+    public Response<Boolean> readBookAddedMessage(@RequestParam String id) {
+        userBookRelationService.readBookAddedMessage(id);
+        return Response.ok(true);
+    }
+    
+    @ApiOperation("用户全部阅读:书籍上架消息")
+    @GetMapping("/read/all/book/added/message")
+    public Response<Boolean> readAllBookAddedMessage(@RequestParam String userId) {
+        userBookRelationService.readAllBookAddedMessage(userId);
+        return Response.ok(true);
+    }
+    
+    @ApiOperation("删除:书籍上架消息")
+    @GetMapping("/delete/book/added/message")
+    public Response<Boolean> deleteBookAddedMessage(@RequestParam String id) {
+        userBookRelationService.deleteBookAddedMessage(id);
+        return Response.ok(true);
+    }
+    
+    @ApiOperation("分页查询:管理员端用户借阅记录")
+    @PostMapping("/admin/book/borrow/page")
+    public Response<Page<BookBorrowPageVO>> adminBookBorrowPage(@Valid @RequestBody BookBorrowPageDTO pageDTO) {
+        return Response.ok(userBookRelationService.adminBookBorrowPage(pageDTO));
+    }
+    
+    @ApiOperation("删除:用户借阅记录")
+    @GetMapping("/delete/book/borrow")
+    public Response<Boolean> deleteBookBorrow(@RequestParam String id) {
+        // todo zss 兼容删除逻辑  分页查询:管理员端用户借阅记录
+        return Response.ok(true);
     }
     
 }

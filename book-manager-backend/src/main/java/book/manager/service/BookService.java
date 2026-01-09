@@ -52,4 +52,11 @@ public interface BookService {
      * @param updateDTO
      */
     void updateBook(BookUpdateDTO updateDTO);
+    
+    /**
+     * 上架:书籍
+     *
+     * @param bookId
+     */
+    void addedBook(String bookId);
 }

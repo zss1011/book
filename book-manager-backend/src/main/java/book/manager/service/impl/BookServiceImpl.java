@@ -1,18 +1,21 @@
 package book.manager.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import book.manager.dao.service.BookDao;
 import book.manager.dao.service.CommonFileDao;
+import book.manager.dao.service.UserBookMessageDao;
 import book.manager.dao.service.UserBookRelationDao;
 import book.manager.domain.common.BaseUUID;
 import book.manager.domain.dto.BookAddDTO;
 import book.manager.domain.dto.BookPageDTO;
 import book.manager.domain.dto.BookUpdateDTO;
 import book.manager.domain.entity.Book;
+import book.manager.domain.entity.UserBookMessage;
 import book.manager.domain.entity.UserBookRelation;
 import book.manager.domain.vo.BookPageVO;
 import book.manager.domain.vo.BookVO;
@@ -45,6 +48,8 @@ public class BookServiceImpl implements BookService {
     private CommonFileDao commonFileDao;
     @Resource
     private UserBookRelationDao userBookRelationDao;
+    @Resource
+    private UserBookMessageDao userBookMessageDao;
     
     /**
      * 新增书籍
@@ -137,17 +142,19 @@ public class BookServiceImpl implements BookService {
             for (UserBookRelation userBookRelation : userBookRelations) {
                 Integer subscriptionStatus = userBookRelation.getSubscriptionStatus();
                 Integer collectStatus = userBookRelation.getCollectStatus();
-                Integer borrowStatus = userBookRelation.getBorrowStatus();
                 if (subscriptionStatus != null) {
                     pageVO.setSubscriptionStatus(subscriptionStatus == 1);
                 }
                 if (collectStatus != null) {
                     pageVO.setCollectStatus(collectStatus == 1);
                 }
-                if (borrowStatus != null) {
-                    pageVO.setBorrowStatus(borrowStatus == 1);
-                }
             }
+            
+            // 借阅状态
+            UserBookRelation borrow = userBookRelations.stream()
+                    .filter(x -> x.getBorrowStatus() != null && x.getBorrowStatus() == 1)
+                    .findFirst().orElse(null);
+            pageVO.setBorrowStatus(borrow != null);
         }
         
         return pageVO;
@@ -213,8 +220,100 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public void updateBook(BookUpdateDTO updateDTO) {
+        // 处理书籍状态
+        handleBookStatus(updateDTO);
+        
         Book book = BeanUtil.copyProperties(updateDTO, Book.class);
         bookDao.updateById(book);
+    }
+    
+    /**
+     * 处理书籍状态
+     *
+     * @param updateDTO
+     */
+    private void handleBookStatus(BookUpdateDTO updateDTO) {
+        Book book = bookDao.getById(updateDTO.getId());
+        
+        // 书籍预售 删除:借阅、上架消息
+        if (updateDTO.getStatus() == 1) {
+            userBookRelationDao.lambdaUpdate()
+                    .eq(UserBookRelation::getBookId, updateDTO.getId())
+                    .eq(UserBookRelation::getBorrowStatus, 1)
+                    .remove();
+            userBookMessageDao.lambdaUpdate()
+                    .eq(UserBookMessage::getBookId, updateDTO.getId())
+                    .remove();
+        }
+        
+        // 书籍上架 发送:上架消息
+        if (updateDTO.getStatus() == 2) {
+            sendSubscriptionMessage(updateDTO.getId());
+        }
+        
+        // 书籍下架 删除:订阅、借阅、上架消息消息
+        if(updateDTO.getStatus() == 3){
+            userBookRelationDao.lambdaUpdate()
+                    .eq(UserBookRelation::getBookId, updateDTO.getId())
+                    .eq(UserBookRelation::getSubscriptionStatus, 1)
+                    .remove();
+            userBookRelationDao.lambdaUpdate()
+                    .eq(UserBookRelation::getBookId, updateDTO.getId())
+                    .eq(UserBookRelation::getBorrowStatus, 1)
+                    .remove();
+            userBookMessageDao.lambdaUpdate()
+                    .eq(UserBookMessage::getBookId, updateDTO.getId())
+                    .remove();
+        }
+    }
+    
+    /**
+     * 上架:书籍
+     *
+     * @param bookId
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void addedBook(String bookId) {
+        // 书籍上架
+        bookDao.lambdaUpdate()
+                .eq(BaseUUID::getId, bookId)
+                .set(Book::getAddedDate, new Date())
+                .set(Book::getStatus, 2)
+                .update();
+        
+        // 给订阅的用户发送上架消息
+        sendSubscriptionMessage(bookId);
+    }
+    
+    private void sendSubscriptionMessage(String bookId) {
+        List<UserBookRelation> relations = userBookRelationDao.listByBookIdAndSubscriptionStatus(bookId, 1);
+        List<UserBookMessage> userBookMessages = new ArrayList<>();
+        for (UserBookRelation relation : relations) {
+            // 跳过已发送的
+            UserBookMessage one = userBookMessageDao.getByUserIdAndBookId(bookId, relation.getUserId());
+            if (one != null) {
+                continue;
+            }
+            UserBookMessage userBookMessage = buildUserBookMessage(relation);
+            userBookMessages.add(userBookMessage);
+        }
+        
+        userBookMessageDao.saveBatch(userBookMessages);
+    }
+    
+    private UserBookMessage buildUserBookMessage(UserBookRelation relation) {
+        UserBookMessage message = new UserBookMessage();
+        message.setUserId(relation.getUserId());
+        message.setBookId(relation.getBookId());
+        
+        Book subscriptionBook = bookDao.getById(relation.getBookId());
+        String msg = "您好，您订阅的由" + subscriptionBook.getAuthor() + "创作的书籍【" + subscriptionBook.getName() + "】已经上线，可以借阅了";
+        message.setMessage(msg);
+        
+        message.setReadStatus(0);
+        
+        return message;
     }
 }
 

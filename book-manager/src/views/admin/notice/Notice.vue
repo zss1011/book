@@ -2,7 +2,7 @@
     <div class="notice-container">
         <div class="header">
             <div style="font-size: 14px; color: gray">公告标题</div>
-            <el-input v-model="pageDTO.title" size="small" style="width: 140px" />
+            <el-input v-model="pageDTO.bookName" size="small" style="width: 140px" />
             <div style="font-size: 14px; color: gray">发布时间</div>
             <el-date-picker
                 class="date-picker"
@@ -42,7 +42,7 @@ const dateScope = ref('')
 const pageDTO = reactive({
     current: 1,
     size: 10,
-    title: '',
+    bookName: '',
     startTime: null,
     endTime: null,
 })

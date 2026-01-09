@@ -2,6 +2,7 @@ package book.manager.domain.entity;
 
 import book.manager.domain.common.BaseUUID;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -22,21 +23,21 @@ import lombok.Data;
 @TableName("user_book_relation")
 @ApiModel(value = "UserBookRelation对象", description = "用户书籍表")
 public class UserBookRelation extends BaseUUID implements Serializable {
-
+    
     private static final long serialVersionUID = 1L;
-
+    
     @ApiModelProperty("用户id")
     private String userId;
-
+    
     @ApiModelProperty("书籍id")
     private String bookId;
-
+    
     @ApiModelProperty("订阅状态:1是 0否")
     private Integer subscriptionStatus;
-
+    
     @ApiModelProperty("收藏状态:1是 0否")
     private Integer collectStatus;
-
+    
     @ApiModelProperty("借阅状态:1是 0否")
     private Integer borrowStatus;
     
@@ -45,5 +46,11 @@ public class UserBookRelation extends BaseUUID implements Serializable {
     
     @ApiModelProperty("归还日期")
     private Date returnTime;
+    
+    @ApiModelProperty("实际归还时间")
+    private Date actualReturnTime;
+    
+    @ApiModelProperty("管理员是否删除记录:1是 0否")
+    private Integer adminDelete;
     
 }

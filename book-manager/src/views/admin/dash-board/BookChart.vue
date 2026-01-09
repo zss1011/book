@@ -34,7 +34,7 @@ onMounted(() => {
         yAxis: {
             type: 'value'
         },
-        title: {
+        bookName: {
             text: '图书上架情况',
             left: '30px',
         },

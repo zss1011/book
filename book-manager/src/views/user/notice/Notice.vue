@@ -1,7 +1,7 @@
 <template>
     <div class="notice-container">
         <div class="header">
-            <el-input v-model="pageDTO.title" @keyup.enter="handleSearch()" class="search-input" placeholder="标题">
+            <el-input v-model="pageDTO.bookName" @keyup.enter="handleSearch()" class="search-input" placeholder="标题">
                 <template #suffix>
                     <el-icon class="search-icon" @click="handleSearch()">
                         <Search />
@@ -42,7 +42,7 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 
 const pageDTO = reactive({
-    title: null,
+    bookName: null,
     current: 1,
     size: 5,
     total: 0,

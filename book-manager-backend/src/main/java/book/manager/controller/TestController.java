@@ -2,6 +2,7 @@ package book.manager.controller;
 
 import book.manager.domain.dto.Test04DTO;
 import book.manager.service.TestService;
+import book.manager.utils.ExcelUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -9,10 +10,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.FileInputStream;
 import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 
@@ -83,7 +87,9 @@ public class TestController {
     }
     
     @PostMapping("/test04")
-    public void test04(@RequestBody Test04DTO dto) throws Exception {
+    public void test04(@RequestParam MultipartFile file) throws Exception {
+        List<Map<String, String>> maps = ExcelUtil.read(file.getInputStream());
+        System.out.println();
     }
     
     

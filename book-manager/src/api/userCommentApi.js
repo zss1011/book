@@ -19,3 +19,8 @@ export const getAllUserCommentsApi = () => {
 export const userCommentPageApi = (pageDTO) => {
     return request.post('/user/comment/v1/page', pageDTO);
 }
+
+// 删除:用户评论
+export const deleteUserCommentApi = (id) => {
+    return request.get('/user/comment/v1/delete?id=' + id);
+}

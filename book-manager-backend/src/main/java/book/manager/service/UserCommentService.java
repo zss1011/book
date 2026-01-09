@@ -45,4 +45,11 @@ public interface UserCommentService {
      * @return
      */
     Page<List<UserCommentVO>> userCommentPage(UserCommentPageDTO dto);
+    
+    /**
+     * 删除:用户评论
+     *
+     * @param id
+     */
+    void deleteUserComment(String id);
 }

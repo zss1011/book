@@ -4,7 +4,7 @@
         <div class="login">
             <div class="login-form">
                 <div style="font-size: 24px; margin-top: 30px; text-align: center">快登入吧</div>
-                <el-form :model="login" :rules="rules" class="form-content">
+                <el-form :model="login" :rules="rules" class="form-item-content">
                     <el-form-item prop="username" style="margin-top: 20px">
                         <el-input v-model="login.username" :prefix-icon="Avatar" placeholder="请输入账户" style="width: 300px" />
                     </el-form-item>
@@ -112,7 +112,7 @@ const rules = {
             transform: translate(-20px, 60px);
             opacity: 95%;
 
-            .form-content {
+            .form-item-content {
                 margin-top: 30px;
                 display: flex;
                 flex-direction: column;

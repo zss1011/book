@@ -196,6 +196,16 @@ public class UserCommentServiceImpl implements UserCommentService {
         List<List<UserCommentVO>> userComments = getAllUserComments(dto);
         return ListUtil.buildPage(userComments, dto.getCurrent(), dto.getSize());
     }
+    
+    /**
+     * 删除:用户评论
+     *
+     * @param id
+     */
+    @Override
+    public void deleteUserComment(String id) {
+        userCommentDao.removeById(id);
+    }
 }
 
 

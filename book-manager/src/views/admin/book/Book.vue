@@ -11,7 +11,7 @@
                 <div class="add-book-dialog">
                     <div class="header">新增书籍</div>
                     <div class="content">
-                        <el-form :model="book" :rules="rules" ref="ruleFormRef" class="form-content">
+                        <el-form :model="book" :rules="rules" ref="ruleFormRef" class="form-item-content">
                             <div class="left">
                                 <div style="margin-bottom: 10px; color: #9f9f9f">书籍封面</div>
                                 <el-form-item prop="cover">
@@ -184,7 +184,7 @@ const rules = {
 }
 
 // 预售状态
-const bookStatus = ref(true)
+const bookStatus = ref(false)
 watch(bookStatus, (val) => {
     book.value.status = val ? 1 : 2;
 }, {immediate: true})
@@ -380,7 +380,7 @@ const handleUpdateBook = async (bookId) => {
             }
 
             .content {
-                .form-content {
+                .form-item-content {
                     display: flex;
 
                     :deep(.el-input__wrapper) {
