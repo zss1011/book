@@ -86,7 +86,6 @@ const handleReadNotice = async (id) => {
 
     .header {
         height: 120px;
-        background-color: skyblue;
         display: flex;
         justify-content: center;
         align-items: center;

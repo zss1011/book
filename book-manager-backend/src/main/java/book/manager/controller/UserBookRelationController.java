@@ -44,6 +44,12 @@ public class UserBookRelationController {
         return Response.ok(userBookRelationService.userBookSubscriptionPage(pageDTO));
     }
     
+    @ApiOperation("管理员分页查询:用户已订阅书籍")
+    @PostMapping("/admin/subscription/page")
+    public Response<Page<UserBookSubscriptionPageVO>> adminUserBookSubscriptionPage(@Valid @RequestBody AdminUserBookSubscriptionPageDTO pageDTO) {
+        return Response.ok(userBookRelationService.adminUserBookSubscriptionPage(pageDTO));
+    }
+    
     @ApiOperation("分页查询:用户已借阅书籍")
     @PostMapping("/borrow/page")
     public Response<Page<UserBookBorrowPageVO>> userBookBorrowPage(@Valid @RequestBody UserBookBorrowPageDTO pageDTO) {
@@ -86,7 +92,7 @@ public class UserBookRelationController {
     @ApiOperation("删除:用户借阅记录")
     @GetMapping("/delete/book/borrow")
     public Response<Boolean> deleteBookBorrow(@RequestParam String id) {
-        // todo zss 兼容删除逻辑  分页查询:管理员端用户借阅记录
+        userBookRelationService.deleteBookBorrow(id);
         return Response.ok(true);
     }
     

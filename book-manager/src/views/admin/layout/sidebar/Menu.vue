@@ -13,7 +13,6 @@ import {filterMenus} from "@/use/useMenu.js";
 
 // 获取菜单路由
 let menus = filterMenus(routes);
-console.log(menus)
 </script>
 
 <style scoped lang="scss">

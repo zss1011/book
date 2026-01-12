@@ -46,6 +46,11 @@ export const adminRoutes = {
             meta: {menu: false, bookName: '公告管理', path: '/notice/add'},
         },
         {
+            path: 'subscription',
+            component: () => import('@/views/admin/subscription/Subscription.vue'),
+            meta: {menu: true, bookName: '图书订阅', icon: 'Notification', path: '/subscription'},
+        },
+        {
             path: 'leave/message',
             component: () => import('@/views/admin/leave-message/LeaveMessage.vue'),
             meta: {menu: true, bookName: '留言', icon: 'Notification', path: '/leave/message'},

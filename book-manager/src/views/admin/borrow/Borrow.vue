@@ -28,17 +28,26 @@
                 <el-table-column prop="borrowDate" label="借阅时间" width="180" />
                 <el-table-column label="操作">
                     <template #default="{row}">
-                        <el-button type="primary" plain size="small" @click="handleDelete(row)">删除</el-button>
+                        <el-button type="primary" plain size="small" @click="handleDelete(row.id)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
+            <el-pagination
+                class="pagination"
+                v-model:current-page="queryPage.current"
+                v-model:page-size="queryPage.size"
+                :page-sizes="[5, 10, 20]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="queryPage.total"
+                @change="handlePageChange"
+            />
         </div>
     </div>
 </template>
 
 <script setup lang="js">
 import {onMounted, reactive, ref} from "vue";
-import {adminBookBorrowPageApi} from "@/api/userBookRelationApi.js";
+import {adminBookBorrowPageApi, deleteBookBorrowApi} from "@/api/userBookRelationApi.js";
 import dayjs from "dayjs";
 import {DATE_TIME_FORMAT} from "@/utils/dateFormat.js";
 
@@ -59,15 +68,14 @@ onMounted(async () => {
 
 const fetchTableData = async () => {
     const body = {
-        current: 1,
-        size: 5,
+        current: queryPage.current,
+        size: queryPage.size,
         startTime: queryPage.startTime,
         endTime: queryPage.endTime,
     }
     const {data} = await adminBookBorrowPageApi(body);
     queryPage.total = data.total;
     tableData.value = data.records
-    console.log(data)
 }
 
 const handleSearch = async () => {
@@ -83,9 +91,15 @@ const handleDateChange = async () => {
     }
 }
 
-// todo zss 1
-const handleDelete = async (row) => {
-    console.log(row)
+const handleDelete = async (id) => {
+    await deleteBookBorrowApi(id)
+    await fetchTableData()
+}
+
+const handlePageChange = async (current, size) => {
+    queryPage.current = current;
+    queryPage.size = size;
+    await fetchTableData()
 }
 
 setInterval(() => {
@@ -109,10 +123,16 @@ setInterval(() => {
 
     .content {
         display: flex;
+        flex-direction: column;
 
         .table {
             margin-left: 10px;
             width: 85%;
+        }
+
+        .pagination {
+            margin-left: 300px;
+            margin-top: 20px;
         }
     }
 }

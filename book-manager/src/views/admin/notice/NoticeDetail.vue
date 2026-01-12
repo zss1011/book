@@ -27,7 +27,6 @@ onMounted(async () => {
     title.value = res.data.bookName;
     // 处理图片预览
     content.value = await replaceFileId(res.data.content);
-    console.log()
 })
 
 // 替换fileId

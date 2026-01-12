@@ -44,3 +44,13 @@ export const deleteBookAddedMessageApi = (id) => {
 export const adminBookBorrowPageApi = (data) => {
     return request.post('/user/book/relation/v1/admin/book/borrow/page', data)
 }
+
+// 删除:用户借阅记录
+export const deleteBookBorrowApi = (id) => {
+    return request.get('/user/book/relation/v1/delete/book/borrow?id=' + id)
+}
+
+// 管理员分页查询:用户已订阅书籍
+export const adminUserBookSubscriptionPageApi = (data) => {
+    return request.post('/user/book/relation/v1/admin/subscription/page', data)
+}

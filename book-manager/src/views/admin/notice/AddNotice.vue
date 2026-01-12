@@ -67,7 +67,6 @@ editorConfig.MENU_CONF['uploadVideo'] = {
     // 自定义上传
     async customUpload(file, insertFn) {
         const res = await uploadFileApi(file)
-        console.log(res)
         let videoId = res.data
         // 视频播放与图片预览一样，转成临时在线播放地址
         const videoUrl = await download(videoId);

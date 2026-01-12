@@ -25,4 +25,6 @@ public interface UserBookRelationDao extends IService<UserBookRelation> {
     List<UserBookRelation> listByUserIdAndSubscriptionStatus(String userId, int subscriptionStatus);
     
     List<UserBookRelation> listByBookIdAndSubscriptionStatus(String bookId, int subscriptionStatus);
+    
+    List<UserBookRelation> listBySubscriptionStatus(int subscriptionStatus);
 }

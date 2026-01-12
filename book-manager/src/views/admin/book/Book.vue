@@ -280,7 +280,6 @@ const handleDialog = () => {
     isAddMode.value = true
     book.value = {}
     previewImgUrl.value = ''
-    console.log(book.value)
 }
 const handleCloseDialog = () => {
     dialogVisible.value = false

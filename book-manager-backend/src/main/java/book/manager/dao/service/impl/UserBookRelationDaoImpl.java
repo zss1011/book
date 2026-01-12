@@ -1,5 +1,6 @@
 package book.manager.dao.service.impl;
 
+import book.manager.domain.common.BaseUUID;
 import book.manager.domain.entity.UserBookRelation;
 import book.manager.dao.mapper.UserBookRelationMapper;
 import book.manager.dao.service.UserBookRelationDao;
@@ -57,6 +58,14 @@ public class UserBookRelationDaoImpl extends ServiceImpl<UserBookRelationMapper,
         return this.lambdaQuery()
                 .eq(UserBookRelation::getBookId, bookId)
                 .eq(UserBookRelation::getSubscriptionStatus, subscriptionStatus)
+                .list();
+    }
+    
+    @Override
+    public List<UserBookRelation> listBySubscriptionStatus(int subscriptionStatus) {
+        return this.lambdaQuery()
+                .eq(UserBookRelation::getSubscriptionStatus, 1)
+                .orderByDesc(BaseUUID::getCreateTime)
                 .list();
     }
 }

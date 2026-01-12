@@ -19,7 +19,6 @@ import {onMounted, ref} from "vue";
 // select逻辑
 const dateRange = ref('7天内');
 const onChange = (val) => {
-    console.log(val)
 }
 
 onMounted(() => {
@@ -34,7 +33,7 @@ onMounted(() => {
         yAxis: {
             type: 'value'
         },
-        bookName: {
+        title: {
             text: '图书上架情况',
             left: '30px',
         },

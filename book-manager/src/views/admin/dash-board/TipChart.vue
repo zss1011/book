@@ -5,8 +5,26 @@
 <script setup lang="js">
 import * as echarts from 'echarts';
 import {onMounted} from "vue";
+import {bookStatBaseInfoApi} from "@/api/bookStat.js";
 
-onMounted(() => {
+// 读取统计数据
+const fetchBookStatData = async () => {
+    const res = await bookStatBaseInfoApi()
+    data = res.data
+}
+
+// 预售、上架、借阅、收藏
+let data = [
+    {value: 0, name: '预售'},
+    {value: 0, name: '上架'},
+    {value: 0, name: '借阅'},
+    {value: 0, name: '收藏'},
+]
+
+onMounted(async () => {
+    // 读取统计数据
+    await fetchBookStatData();
+
     let chartDom = document.getElementById('pie');
     let myChart = echarts.init(chartDom);
     myChart.setOption({
@@ -24,12 +42,11 @@ onMounted(() => {
                 name: 'Access From',
                 type: 'pie',
                 radius: '50%',
-                data: [
-                    { value: 3.12, name: '3.12%' },
-                    { value: 34.38, name: '35.38%' },
-                    { value: 34.38, name: '33.38%' },
-                    { value: 28.12, name: '28.12%' },
-                ],
+                data: data,
+                label: {
+                    show: true,
+                    formatter: '{b} ({d}%)'
+                },
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,

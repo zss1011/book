@@ -264,6 +264,86 @@ public class UserBookRelationServiceImpl implements UserBookRelationService {
     }
     
     /**
+     * 管理员分页查询:用户已订阅书籍
+     *
+     * @param pageDTO
+     * @return
+     */
+    @Override
+    public Page<UserBookSubscriptionPageVO> adminUserBookSubscriptionPage(AdminUserBookSubscriptionPageDTO pageDTO) {
+        // 分页数据
+        List<UserBookRelation> relations = getPagedata3(pageDTO);
+        
+        // 准备数据
+        List<String> bookIds = relations.stream().map(UserBookRelation::getBookId).distinct().collect(Collectors.toList());
+        List<Book> books = bookDao.listByIds(bookIds);
+        Map<String, Book> bookMap = books.stream().collect(Collectors.toMap(Book::getId, x -> x));
+        
+        // 构建PageVO
+        List<UserBookSubscriptionPageVO> pageVOS = new ArrayList<>();
+        for (UserBookRelation relation : relations) {
+            UserBookSubscriptionPageVO pageVO = buildUserBookSubscriptionPageVO2(relation, bookMap);
+            pageVOS.add(pageVO);
+        }
+        
+        // 过滤
+        pageVOS = filterSearch5(pageDTO, pageVOS);
+        
+        // 返回
+        return ListUtil.buildPage(pageVOS, pageDTO.getCurrent(), pageDTO.getSize());
+    }
+    
+    private List<UserBookSubscriptionPageVO> filterSearch5(AdminUserBookSubscriptionPageDTO pageDTO, List<UserBookSubscriptionPageVO> pageVOS) {
+        pageVOS = filterBookName4(pageDTO.getBookName(), pageVOS);
+        pageVOS = filterDateTime2(pageDTO.getStartTime(), pageDTO.getEndTime(), pageVOS);
+        return pageVOS;
+    }
+    
+    private List<UserBookSubscriptionPageVO> filterDateTime2(Date startTime, Date endTime, List<UserBookSubscriptionPageVO> pageVOS) {
+        if (startTime == null || endTime == null) {
+            return pageVOS;
+        }
+        return pageVOS.stream()
+                .filter(x -> x.getCreateTime() != null && x.getCreateTime().after(startTime) && x.getCreateTime().before(endTime))
+                .collect(Collectors.toList());
+    }
+    
+    private List<UserBookSubscriptionPageVO> filterBookName4(String bookName, List<UserBookSubscriptionPageVO> pageVOS) {
+        if (StrUtil.isBlank(bookName)) {
+            return pageVOS;
+        }
+        
+        return pageVOS.stream()
+                .filter(x -> x.getBookName() != null && x.getBookName().contains(bookName))
+                .collect(Collectors.toList());
+    }
+    
+    private UserBookSubscriptionPageVO buildUserBookSubscriptionPageVO2(UserBookRelation relation, Map<String, Book> bookMap) {
+        Book book = bookMap.get(relation.getBookId());
+        
+        UserBookSubscriptionPageVO pageVO = new UserBookSubscriptionPageVO();
+        pageVO.setId(relation.getId());
+        pageVO.setBookId(relation.getBookId());
+        
+        User user = userDao.getById(relation.getUserId());
+        pageVO.setSubscriptionUserId(user.getId());
+        pageVO.setSubscriptionRealName(user.getRealName());
+        
+        pageVO.setBookName(book.getName());
+        pageVO.setAuthor(book.getAuthor());
+        pageVO.setNumber(book.getNumber());
+        pageVO.setBookrack(book.getBookrack());
+        pageVO.setCreateTime(relation.getCreateTime());
+        
+        return pageVO;
+    }
+    
+    private List<UserBookRelation> getPagedata3(AdminUserBookSubscriptionPageDTO pageDTO) {
+        List<UserBookRelation> relations = userBookRelationDao.listBySubscriptionStatus(1);
+        return relations;
+    }
+    
+    /**
      * 分页查询:用户已借阅书籍
      *
      * @param pageDTO
@@ -498,8 +578,22 @@ public class UserBookRelationServiceImpl implements UserBookRelationService {
     private List<UserBookRelation> getPageData2(BookBorrowPageDTO pageDTO) {
         List<UserBookRelation> relations = userBookRelationDao.lambdaQuery()
                 .isNotNull(UserBookRelation::getBorrowStatus)
+                .ne(UserBookRelation::getAdminDelete, 1)
                 .list();
         return relations;
+    }
+    
+    /**
+     * 删除:用户借阅记录
+     *
+     * @param id
+     */
+    @Override
+    public void deleteBookBorrow(String id) {
+        userBookRelationDao.lambdaUpdate()
+                .eq(BaseUUID::getId, id)
+                .set(UserBookRelation::getAdminDelete, 1)
+                .update();
     }
 }
 

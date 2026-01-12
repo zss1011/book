@@ -64,7 +64,6 @@ const handleRegister = async () => {
         return;
     }
     const res = await registerUserApi(register.value)
-    console.log(res)
     if (res.code !== 200) {
         return
     }

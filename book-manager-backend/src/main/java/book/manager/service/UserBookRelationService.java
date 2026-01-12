@@ -37,6 +37,14 @@ public interface UserBookRelationService {
     Page<UserBookSubscriptionPageVO> userBookSubscriptionPage(UserBookRelationPageDTO pageDTO);
     
     /**
+     * 管理员分页查询:用户已订阅书籍
+     *
+     * @param pageDTO
+     * @return
+     */
+    Page<UserBookSubscriptionPageVO> adminUserBookSubscriptionPage(AdminUserBookSubscriptionPageDTO pageDTO);
+    
+    /**
      * 分页查询:用户已借阅书籍
      *
      * @param pageDTO
@@ -80,4 +88,13 @@ public interface UserBookRelationService {
      * @return
      */
     Page<BookBorrowPageVO> adminBookBorrowPage(BookBorrowPageDTO pageDTO);
+    
+    /**
+     * 删除:用户借阅记录
+     *
+     * @param id
+     */
+    void deleteBookBorrow(String id);
+    
+   
 }
